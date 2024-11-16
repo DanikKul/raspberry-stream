@@ -1,9 +1,9 @@
 import json
 import time
-
-import cam_utils.detect as detect
+import threading
 import cv2
 import numpy as np
+import cam_utils.detect as detect
 
 
 class Buffer:
@@ -12,14 +12,17 @@ class Buffer:
         self.buffer = []
 
     def append(self, frame):
-        if len(frame) > self.size:
+        if len(self.buffer) > self.size:
             self.buffer.pop(0)
         self.buffer.append(frame)
 
     def pop(self):
-        return self.buffer.pop()
+        if len(self.buffer) > 1:
+            return self.buffer.pop()
+        else:
+            return self.buffer[0]
 
-    def __index__(self):
+    def __getitem__(self, idx):
         return self.buffer.index(self.buffer[0])
 
     def __len__(self):
@@ -33,18 +36,26 @@ class Distribution:
     def init(self):
         detected = json.loads(detect.detect_cameras())
         self.cameras = []
-        self.frames = Buffer(100)
+        self.frames = []
+        serve_cams = []
         for cam in detected:
             self.cameras.append(cv2.VideoCapture(cam))
             self.cameras[-1].set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('m', 'j', 'p', 'g'))
+            serve_cams.append(threading.Thread(target=self.serve_camera, args=[cam]))
+            serve_cams[-1].start()
+            self.frames.append(Buffer(1000))
+
+    def serve_camera(self, idx):
+        while True:
+            t1 = time.time()
+            ret, frame = self.cameras[idx].read()
+            self.frames[idx].append(frame)
+            t2 = time.time()
+            print(f'CAM: {idx} TIME: {t2 - t1}')
 
     def get_frame(self, cam_idx: int, resize: tuple | None = None, detect: bool = False) -> np.ndarray:
-        t1 = time.time()
-        frame = None
-        while not frame:
-            ret, frame = self.cameras[cam_idx].read()
-        t2 = time.time()
-        print('TIME: {}'.format(t2 - t1))
+        frame = self.frames[cam_idx].buffer[-1]
+        print(frame)
         if resize is not None:
             frame = cv2.resize(frame, resize, interpolation=cv2.INTER_LINEAR)
         return frame
