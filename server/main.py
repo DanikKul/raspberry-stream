@@ -1,11 +1,9 @@
 from flask import Flask, request
 from flask import render_template
 from flask import Response
-import cam.distribute as cs
+import cam_utils as cu
 
-import cv2
-
-dist = cs.Distribution()
+dist = cu.Distribution()
 cam_number = dist.count_cameras()
 
 app = Flask(__name__)

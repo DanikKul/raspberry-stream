@@ -1,7 +1,7 @@
 import cv2
 import json
 import multiprocessing as mp
-from detect import detect_cameras
+from cam_utils.detect import detect_cameras
 
 
 def start_stream_local(no: int):

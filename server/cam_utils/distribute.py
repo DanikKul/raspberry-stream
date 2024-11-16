@@ -1,6 +1,6 @@
 import json
 
-import detect
+import cam_utils.detect as detect
 import cv2
 
 
