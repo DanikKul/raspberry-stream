@@ -3,6 +3,7 @@ import json
 
 
 def detect_cameras():
+    print("Detecting cameras...")
     valid_cams = []
     for i in range(1):
         cap = cv2.VideoCapture(cv2.CAP_V4L2)
