@@ -9,6 +9,7 @@ def detect_cameras():
         if cap is None or not cap.isOpened():
             print('Warning: unable to open video source: ', i)
         else:
+            print('Detected camera: ', i)
             valid_cams.append(i)
     return json.dumps(valid_cams)
 
