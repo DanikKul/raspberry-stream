@@ -6,6 +6,25 @@ import cv2
 import numpy as np
 
 
+class Buffer:
+    def __init__(self, size):
+        self.size = size
+        self.buffer = []
+
+    def append(self, frame):
+        if len(frame) > self.size:
+            self.buffer.pop(0)
+        self.buffer.append(frame)
+
+    def pop(self):
+        return self.buffer.pop()
+
+    def __index__(self):
+        return self.buffer.index(self.buffer[0])
+
+    def __len__(self):
+        return len(self.buffer)
+
 class Distribution:
 
     def __init__(self):
@@ -14,13 +33,16 @@ class Distribution:
     def init(self):
         detected = json.loads(detect.detect_cameras())
         self.cameras = []
+        self.frames = Buffer(100)
         for cam in detected:
             self.cameras.append(cv2.VideoCapture(cam))
             self.cameras[-1].set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('m', 'j', 'p', 'g'))
 
     def get_frame(self, cam_idx: int, resize: tuple | None = None, detect: bool = False) -> np.ndarray:
         t1 = time.time()
-        ret, frame = self.cameras[cam_idx].read()
+        frame = None
+        while not frame:
+            ret, frame = self.cameras[cam_idx].read()
         t2 = time.time()
         print('TIME: {}'.format(t2 - t1))
         if resize is not None:
