@@ -14,7 +14,7 @@ class Distribution:
         detected = json.loads(detect.detect_cameras())
         self.cameras = []
         for cam in detected:
-            self.cameras.append(cv2.VideoCapture(cam))
+            self.cameras.append(cv2.VideoCapture(cam, cv2.CAP_FFMPEG))
             self.cameras[-1].set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('m', 'j', 'p', 'g'))
 
     def get_frame(self, cam_idx: int, resize: tuple | None = None, detect: bool = False) -> np.ndarray:

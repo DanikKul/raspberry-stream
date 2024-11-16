@@ -6,7 +6,7 @@ def detect_cameras():
     print("Detecting cameras...")
     valid_cams = []
     for i in range(8):
-        cap = cv2.VideoCapture(cv2.CAP_V4L2)
+        cap = cv2.VideoCapture(i)
         if cap is None or not cap.isOpened():
             print('Warning: unable to open video source: ', i)
 
