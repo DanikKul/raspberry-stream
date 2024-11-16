@@ -4,7 +4,7 @@ import json
 
 def detect_cameras():
     valid_cams = []
-    for i in range(8):
+    for i in range(50):
         cap = cv2.VideoCapture(i)
         if cap is None or not cap.isOpened():
             print('Warning: unable to open video source: ', i)
