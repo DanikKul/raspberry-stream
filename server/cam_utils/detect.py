@@ -16,5 +16,5 @@ def detect_cameras():
     return json.dumps(valid_cams)
 
 
-if __name__ == "__main__":
-    print(detect_cameras())
+# if __name__ == "__main__":
+#     print(detect_cameras())
