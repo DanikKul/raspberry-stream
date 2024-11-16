@@ -55,7 +55,6 @@ class Distribution:
 
     def get_frame(self, cam_idx: int, resize: tuple | None = None, detect: bool = False) -> np.ndarray:
         frame = self.frames[cam_idx].buffer[-1]
-        print(frame)
         if resize is not None:
             frame = cv2.resize(frame, resize, interpolation=cv2.INTER_LINEAR)
         return frame
