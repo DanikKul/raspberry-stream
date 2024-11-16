@@ -4,6 +4,7 @@ from flask import Response
 import cam_utils as cu
 
 dist = cu.Distribution()
+dist.init()
 cam_number = dist.count_cameras()
 
 app = Flask(__name__)
@@ -29,4 +30,4 @@ def video():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7070, debug=True)
+    app.run(host='0.0.0.0', port=7070)

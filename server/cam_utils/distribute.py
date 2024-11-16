@@ -6,11 +6,14 @@ import numpy as np
 
 
 class Distribution:
+
     def __init__(self):
+        pass
+
+    def init(self):
         detected = json.loads(detect.detect_cameras())
         self.cameras = []
-        for cam in detected:
-            self.cameras.append(cv2.VideoCapture(cv2.CAP_V4L2))
+        self.cameras.append(cv2.VideoCapture(cv2.CAP_V4L2))
 
     def get_frame(self, cam_idx: int, resize: tuple | None = None, detect: bool = False) -> np.ndarray:
         ret, frame = self.cameras[cam_idx].read()
