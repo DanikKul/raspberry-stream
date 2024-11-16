@@ -1,0 +1,18 @@
+<html style="height: 100%">
+<head>
+    <title>Stream</title>
+</head>
+<body style="position: relative; background-color: dimgray;">
+<h1 style="width: 100%">
+    Streaming Service
+</h1>
+<h4 style="width: 100%">
+    Choose stream below
+</h4>
+<ul>
+    {% for _ in range(camera_number) %}
+    <li><a href="{{ url_for('get_stream', cam=_, detection=False) }}">Cam {{_}}</a></li>
+    {% endfor %}
+</ul>
+</body>
+</html>
