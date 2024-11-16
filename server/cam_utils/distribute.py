@@ -1,4 +1,5 @@
 import json
+import time
 
 import cam_utils.detect as detect
 import cv2
@@ -18,7 +19,10 @@ class Distribution:
             self.cameras[-1].set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('m', 'j', 'p', 'g'))
 
     def get_frame(self, cam_idx: int, resize: tuple | None = None, detect: bool = False) -> np.ndarray:
+        t1 = time.time()
         ret, frame = self.cameras[cam_idx].read()
+        t2 = time.time()
+        print('TIME: {}'.format(t2 - t1))
         if resize is not None:
             frame = cv2.resize(frame, resize, interpolation=cv2.INTER_LINEAR)
         return frame
