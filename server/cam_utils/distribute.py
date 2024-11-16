@@ -2,6 +2,7 @@ import json
 
 import cam_utils.detect as detect
 import cv2
+import numpy as np
 
 
 class Distribution:
@@ -11,7 +12,7 @@ class Distribution:
         for cam in detected:
             self.cameras.append(cv2.VideoCapture(cam))
 
-    def get_frame(self, cam_idx: int, resize: tuple | None = None, detect: bool = False) -> cv2.Mat:
+    def get_frame(self, cam_idx: int, resize: tuple | None = None, detect: bool = False) -> np.ndarray:
         ret, frame = self.cameras[cam_idx].read()
         if resize is not None:
             frame = cv2.resize(frame, resize, interpolation=cv2.INTER_LINEAR)
