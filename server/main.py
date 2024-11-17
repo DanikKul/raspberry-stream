@@ -22,7 +22,7 @@ def main():
     try:
         stream_props.set_mode(stream_props, 'cv2')
         capture = cv2.VideoCapture(0)
-        capture.set(cv2.CAP_PROP_FPS, 60)
+        capture.set(cv2.CAP_PROP_FPS, 30)
         capture.set(cv2.CAP_PROP_BUFFERSIZE, 100)
         capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('M', 'J', 'P', 'G'))
         stream_props.set_capture(stream_props, capture)
