@@ -1,27 +1,41 @@
-from flask import Flask, render_template, Response
-from cam_utils.camera import Camera
 import cv2
+import pyshine as ps
 
-app = Flask(__name__)
+HTML = """
+<html>
+<head>
+<title>Streaming</title>
+</head>
+
+<body>
+<center><h1>Streaming</h1></center>
+<center><img src="stream.mjpg" width='640' height='480' autoplay playsinline></center>
+</body>
+</html>
+"""
 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+def main():
+    stream_props = ps.StreamProps
+    stream_props.set_Page(stream_props, HTML)
+    address = ('', 7777)
+    try:
+        stream_props.set_Mode(stream_props, 'cv2')
+        capture = cv2.VideoCapture(0)
+        capture.set(cv2.CAP_PROP_BUFFERSIZE, 4)
+        capture.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+        capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+        capture.set(cv2.CAP_PROP_FPS, 30)
+        stream_props.set_Capture(stream_props, capture)
+        stream_props.set_Quality(stream_props, 90)
+        server = ps.Streamer(address, stream_props)
+        server.serve_forever()
 
-
-def gen(camera):
-    while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen(Camera()),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    except KeyboardInterrupt:
+        capture.release()
+        server.socket.close()
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7777, debug=False)
+    main()
+
