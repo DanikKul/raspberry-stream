@@ -1,33 +1,27 @@
-from flask import Flask, request
-from flask import render_template
-from flask import Response
-import cam_utils as cu
-
-dist = cu.Distribution()
-dist.init()
-cam_number = dist.count_cameras()
+from flask import Flask, render_template, Response
+from cam_utils.camera import Camera
+import cv2
 
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
-    return render_template('index.html', camera_number=cam_number)
+    return render_template('index.html')
 
 
-@app.route('/stream', methods=['GET'])
-def get_stream():
-    cam = request.args.get('cam', 0, type=int)
-    detection = request.args.get('detection', False, type=bool)
-    return render_template('stream.html', cam=cam, detection=detection)
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
-@app.route('/video', methods=['GET'])
-def video():
-    cam = request.args.get('cam', 0, type=int)
-    detection = request.args.get('detection', False, type=bool)
-    return Response(dist.get_packet_frame(cam, (720, 480), detection), mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen(Camera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7070)
+    app.run(host='0.0.0.0', port=7777, debug=False)
