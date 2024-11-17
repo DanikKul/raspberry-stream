@@ -1,5 +1,5 @@
 import cv2
-import pyshine as ps
+import server as ps
 
 HTML = """
 <html>
@@ -17,17 +17,17 @@ HTML = """
 
 def main():
     stream_props = ps.StreamProps
-    stream_props.set_Page(stream_props, HTML)
+    stream_props.set_page(stream_props, HTML)
     address = ('', 7777)
     try:
-        stream_props.set_Mode(stream_props, 'cv2')
+        stream_props.set_mode(stream_props, 'cv2')
         capture = cv2.VideoCapture(0)
-        capture.set(cv2.CAP_PROP_BUFFERSIZE, 4)
-        # capture.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
-        # capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+        capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         capture.set(cv2.CAP_PROP_FPS, 30)
-        stream_props.set_Capture(stream_props, capture)
-        stream_props.set_Quality(stream_props, 90)
+        fourcc = cv2.VideoWriter().fourcc('M', 'J', 'P', 'G')
+        capture.set(cv2.CAP_PROP_FOURCC, fourcc)
+        stream_props.set_capture(stream_props, capture)
+        stream_props.set_quality(stream_props, 90)
         server = ps.Streamer(address, stream_props)
         server.serve_forever()
 
