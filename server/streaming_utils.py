@@ -1,27 +1,8 @@
 import threading
 import cv2
-from collections import deque
 import socketserver
 import logging
 from http import server
-import io
-from threading import Condition
-
-
-class StreamOut(object):
-    def __init__(self):
-        self.frame = None
-        self.buffer = io.BytesIO()
-        self.condition = Condition()
-
-    def write(self, buf):
-        if buf.startswith(b'\xff\xd8'):
-            self.buffer.truncate()
-            with self.condition:
-                self.frame = self.buffer.getvalue()
-                self.condition.notify_all()
-            self.buffer.seek(0)
-        return self.buffer.write(buf)
 
 
 class Streamer(socketserver.ThreadingMixIn, server.HTTPServer):
@@ -39,6 +20,9 @@ class StreamProps(server.BaseHTTPRequestHandler):
 
     def set_quality(self, quality):
         self.quality = quality
+
+    def set_processing_function(self, function):
+        self.processing_function = function
 
     def set_mode(self, mode):
         self.mode = mode
@@ -69,7 +53,8 @@ class StreamProps(server.BaseHTTPRequestHandler):
                 try:
                     while True:
                         rc, img = self.capture.read()
-
+                        if self.processing_function:
+                            img = self.processing_function(img)
                         frame = cv2.imencode('.JPEG', img, [cv2.IMWRITE_JPEG_QUALITY, self.quality])[1].tobytes()
                         self.wfile.write(b'--FRAME\r\n')
                         self.send_header('Content-Type', 'image/jpeg')

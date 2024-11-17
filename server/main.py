@@ -1,5 +1,5 @@
 import cv2
-import server as ps
+import streaming_utils as ps
 
 HTML = """
 <html>
@@ -27,6 +27,7 @@ def main():
         capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('M', 'J', 'P', 'G'))
         stream_props.set_capture(stream_props, capture)
         stream_props.set_quality(stream_props, 90)
+        stream_props.set_processing_function(stream_props, None)
         server = ps.Streamer(address, stream_props)
         server.serve_forever()
 
